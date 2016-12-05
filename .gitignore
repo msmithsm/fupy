@@ -1,0 +1,15 @@
+#OS X files
+.DS_STORE
+
+
+#(shared) objects
+*.o 
+*.mod
+*.so
+*.a
+
+#python bytecode
+__pycache__
+*.py[oc]
+
+

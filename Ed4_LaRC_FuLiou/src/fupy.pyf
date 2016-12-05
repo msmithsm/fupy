@@ -1,0 +1,37 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module fupy ! in 
+    interface  ! in :fupy
+        subroutine init ! in :fupy:fu_interface.f90
+            use fuinput
+        end subroutine init
+        subroutine rad(nlev,plev,tlev,tsfc,qlev,o3lev,co2ppmv,ch4vmr,n2ovmr,cfc11vmr,cfc12vmr,cfc22vmr,emis,albedo,coszen,fday,scon,fuir,fdir,fusw,fdsw) ! in :fupy:fu_interface.f90
+            use fulioumulti
+            integer, optional,intent(hide),check(len(plev)>=nlev),depend(plev) :: nlev=len(plev)
+            real(kind=8) dimension(nlev),intent(in) :: plev
+            real(kind=8) dimension(nlev),intent(in),depend(nlev) :: tlev
+            real(kind=8) intent(in) :: tsfc
+            real(kind=8) dimension(nlev),intent(in),depend(nlev) :: qlev
+            real(kind=8) dimension(nlev),intent(in),depend(nlev) :: o3lev
+            real(kind=8) intent(in) :: co2ppmv=356.0
+            real(kind=8) intent(in) :: ch4vmr=0.0
+            real(kind=8) intent(in) :: n2ovmr=0.0
+            real(kind=8) intent(in) :: cfc11vmr=0.0
+            real(kind=8) intent(in) :: cfc12vmr=0.0
+            real(kind=8) intent(in) :: cfc22vmr=0.0
+            real(kind=8) intent(in) :: emis=1.0
+            real(kind=8) intent(in) :: albedo=0.3
+            real(kind=8) intent(in) :: coszen=0.5
+            real(kind=8) intent(in) :: fday=0.5
+            real(kind=8) intent(in) :: scon=1361.0
+            real(kind=8) dimension(nlev),intent(out),depend(nlev) :: fuir
+            real(kind=8) dimension(nlev),intent(out),depend(nlev) :: fdir
+            real(kind=8) dimension(nlev),intent(out),depend(nlev) :: fusw
+            real(kind=8) dimension(nlev),intent(out),depend(nlev) :: fdsw
+        end subroutine rad
+    end interface 
+end python module fupy
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

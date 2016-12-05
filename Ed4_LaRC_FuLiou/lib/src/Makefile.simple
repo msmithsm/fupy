@@ -1,0 +1,88 @@
+PROG = simple
+
+SRCS = ar_asy.f90 calipso_output.f90 extras.f90 fuinput.f90 fuoutput.f90 \
+	fuprint.f90 gflq.f90 icedirsfc.f90 ma_tip.f90 rad_multi_200511.f90 \
+	seiji_k2d.f90 seiji_solver_200511.f90 simple.f90 taucorr.f90 \
+	uvcor_all.f90 vla.f90 zjin.f90
+
+OBJS = ar_asy.o calipso_output.o extras.o fuinput.o fuoutput.o fuprint.o \
+	gflq.o icedirsfc.o ma_tip.o rad_multi_200511.o seiji_k2d.o \
+	seiji_solver_200511.o simple.o taucorr.o uvcor_all.o vla.o zjin.o
+OBJS_F = aerosols_200511.o aqua_wnflt_0404.o cloud_optics.o misc_200511.o \
+	seiji_twostreamsolv_sw_v20.o
+
+#TKLIBS = -L$(PGSLIB) -lPGSTK
+#CLIBS = $(CERESLIB)/data_products.a $(CERESLIB)/cereslib.a
+#MOD_FLAG = -I. -I../mod -I$(CERESLIB)/mod
+#LIBS = 
+
+#INC_FLAG = -I$(PGSINC) -I$(HDFINC) -I$(HDF5INC) -I../include -I./include
+#VPATH = .:$(PGSINC):$(HDFINC):$(HDF5INC):../include:./include
+
+#HDF_FLAGS = $(HDFEOSDIR) $(HDFEOSLIB) $(HDFDIR) $(HDFLIBS) 
+#HDF5_FLAGS = $(HDFEOS5DIR) $(HDFEOS5LIB) $(HDF5DIR) $(HDF5LIBS) 
+#DAAC_FLAGS = $(ADD_LFLAGS) $(ADD_LIBS) 
+
+#CC = 
+#CFLAGS = 
+#F90 = 
+#F90COMP = 
+#FCOMP = 
+#F90LOAD = 
+
+#F90 = xlf90  -pg
+# F90COMP = -c -qsuffix=f=f90  
+# FCOMP = -c -qextname
+# F90LOAD= -pg -static
+
+#-----------------------------------------
+F90COMP = -qxlf90=nosignedzero,autodealloc  -lmass -qmaxmem=65536 -c -qextname -qsuffix=f=f90 -q64 -qwarn64 -qinit=f90ptr 
+FCOMP = -qxlf90=nosignedzero,autodealloc -lmass  -qmaxmem=32768 -c -qextname -qfixed=80 -q64 -qwarn64
+F90LOAD = -q64 -static
+
+F90LOAD = -q64 
+
+#F90COMP = -qxlf90=nosignedzero,autodealloc -pg -qmaxmem=65536 -c -qextname -qsuffix=f=f90 -qinit=f90ptr
+#FCOMP = -qxlf90=nosignedzero,autodealloc -pg -qmaxmem=32768 -c -qextname -qfixed=80 
+#F90LOAD =  -pg
+
+
+all: $(PROG)
+
+$(PROG): $(OBJS) $(OBJS_F) $(LIBS) $(CLIBS) 
+	$(F90) $(F90LOAD) -o $@ $(OBJS) $(OBJS_F) $(LIBS) $(CLIBS) \
+	$(TKLIBS) $(HDF_FLAGS) $(HDF5_FLAGS) $(DAAC_FLAGS) 
+
+clean:
+	-\rm -f $(PROG) $(OBJS) $(OBJS_F) 
+	-\rm -f *.mod 
+
+.SUFFIXES: 
+
+.SUFFIXES: .f90 .mod .f .c .o
+
+.f90.o:
+	$(F90) $(F90COMP) $(MOD_FLAG) $(INC_FLAG) $< 
+
+.f90.mod:
+	$(F90) $(F90COMP) $(MOD_FLAG) $(INC_FLAG) $< 
+
+.f.o:
+	$(F90) $(FCOMP) $(MOD_FLAG) $(INC_FLAG) $< 
+
+.c.o:
+	$(CC) $(CFLAGS) $(MOD_FLAG) $(INC_FLAG) $< 
+
+calipso_output.o: fuinput.o fuoutput.o
+fuinput.o: extras.o taucorr.o
+fuoutput.o: fuinput.o
+fuprint.o: extras.o fuinput.o fuoutput.o
+gflq.o: extras.o fuinput.o
+icedirsfc.o: fuinput.o fuoutput.o
+ma_tip.o: fuinput.o
+rad_multi_200511.o: fuinput.o fuoutput.o icedirsfc.o uvcor_all.o vla.o
+seiji_k2d.o: fuinput.o seiji_k2d.o
+seiji_solver_200511.o: fuinput.o fuoutput.o
+simple.o: calipso_output.o extras.o gflq.o icedirsfc.o rad_multi_200511.o
+uvcor_all.o: fuinput.o fuoutput.o uvcor_all.o
+vla.o: fuinput.o
