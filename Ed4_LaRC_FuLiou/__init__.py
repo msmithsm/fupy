@@ -10,5 +10,5 @@ Created on Mon Dec  5 02:40:36 2016
 
 __all__ = ['fupy']
 
-import fupy
+from . import fupy
 

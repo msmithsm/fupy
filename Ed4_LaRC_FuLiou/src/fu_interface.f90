@@ -1,6 +1,6 @@
 
 program fu_interface
-  use fuinput 
+  use fulioumulti 
   use extras
   implicit none
   
@@ -8,7 +8,7 @@ program fu_interface
   real(kind=8), allocatable, dimension(:) :: fdir
   real(kind=8), allocatable, dimension(:) :: fusw
   real(kind=8), allocatable, dimension(:) :: fdsw
-  integer np 
+  integer np ,nl
  
  print*, 'begin Fu function test'
   call getatmosphere('../testatms/jmls.lay ',	  &  !!! Fill atmosphere Structure from an input file
@@ -18,7 +18,9 @@ program fu_interface
  fi%ph,  &    ! H20 Mix Ratio (g/g)  "
  fi%po,  &    ! O3 Mix Ratio (g/g)   "
  fi%pts)      !Skin Temperature (K)
- print*, 'read jmls'  
+ print*, 'read jmls' 
+ nl = fi%nv+1
+ fi%pt(1:nl) = fi%pt(nl:1:-1)
  
  
  np = size(fi%pp)
@@ -27,13 +29,15 @@ program fu_interface
  call init
  print*, 'init Fu radiation model'
  
+ call print_in_fu
  call rad(fi%nv+1, &
                fi%pp, fi%pt, fi%pts, &
                fi%ph, fi%po, &
-               356.0, 0.0, 0.0, &
-               0.0,0.0,0.0, &
+               356.0, 0.0, 0.0, 0.0, &
+               0.0,0.0,0.0, 0.0, &
                1.0, 0.3, 0.5, 0.5, 1361., &
                fuir, fdir, fusw, fdsw) 
+call print_out_fu
 print*, 'pass radiation routine'
 print*, ' fu_interface.f90 normal end'
 
@@ -49,8 +53,8 @@ end subroutine init
 subroutine rad(nlev, &
                plev, tlev, tsfc, &
                qlev, o3lev, &
-               co2ppmv, ch4vmr, n2ovmr, &
-               cfc11vmr,cfc12vmr,cfc22vmr, &
+               co2ppmv, ch4vmr, n2ovmr, o2vmr, &
+               cfc11vmr,cfc12vmr,cfc22vmr, ccl4vmr, &
                emis, albedo, coszen, fday, scon, &
                fuir, fdir, fusw, fdsw)
   use fulioumulti
@@ -65,9 +69,11 @@ subroutine rad(nlev, &
   real(kind=8), intent(in) :: co2ppmv
   real(kind=8), intent(in) :: ch4vmr
   real(kind=8), intent(in) :: n2ovmr
+  real(kind=8), intent(in) :: o2vmr
   real(kind=8), intent(in) :: cfc11vmr
   real(kind=8), intent(in) :: cfc12vmr
   real(kind=8), intent(in) :: cfc22vmr
+  real(kind=8), intent(in) :: ccl4vmr
   real(kind=8), intent(in) :: emis !greybody emission
   real(kind=8), intent(in) :: albedo
   real(kind=8), intent(in) :: coszen
@@ -85,7 +91,7 @@ subroutine rad(nlev, &
   fi%pp = plev
   fi%pt = tlev
   fi%pts = tsfc
-  fi%ph = max(qlev, tiny(qlev))
+  fi%ph = qlev
   fi%po = o3lev
   fi%umco2 = co2ppmv
   fi%umch4 = ch4vmr*dble(1.0e06)
@@ -95,11 +101,12 @@ subroutine rad(nlev, &
   fi%sfcalb(:,:,:) = albedo
   fi%ss = scon*fday
   fi%u0 = coszen 
+  fi%ur = coszen
   
   ! RADIATVE TRANSFER --------------------------------------------------
-  !call print_in_fu		   ! PRINTS INPUTS  AS ASCII 
+!   call print_in_fu		   ! PRINTS INPUTS  AS ASCII 
   call rad_multi_fu  ! CALL THE CODE !!!
-  !call print_out_fu
+!   call print_out_fu
   
   fuir = fo(3)%fuir
   fdir = fo(3)%fdir

@@ -2,7 +2,7 @@ PROG = fu_interface
 
 MOD_FLAG = -I../lib/mod 
 LIBS = ../lib/libEd3Fu_201212.a
-FUVER=Ed4_LaRC_FuLiou/src
+FUVER=src
 
 PYVERSION:=35m
 #set python to version 3.5
@@ -21,8 +21,8 @@ endif
 #CFLAGS = 
 
 #!!!SGI
-F90 =gfortran -fdefault-real-8 -fdefault-double-8 -fbacktrace -fno-align-commons
-F77 =gfortran -fdefault-real-8 -fdefault-double-8 -fbacktrace -fno-align-commons
+F90 =gfortran -O3 -fdefault-real-8 -fdefault-double-8 -fno-align-commons
+F77 =gfortran -O3 -fdefault-real-8 -fdefault-double-8 -fno-align-commons
 F90LOAD =
 F90COMP = -c  
 FCOMP	= -c  
@@ -40,7 +40,7 @@ FCOMP	= -c
 # F90LOAD= -static
 
 all: $(PROG)
-	f2py -c --f90flags="-Wno-tabs" -m fupy fupy.pyf fu_interface.f90 $(LIBS) $(MOD_FLAG) 
+	f2py -c --f90flags="-Wno-tabs -fdefault-real-8 -fdefault-double-8 -fno-align-commons" -m fupy fupy.pyf fu_interface.f90 $(LIBS) $(MOD_FLAG) 
 	install_name_tool $(PYLIB) -change $(LIBS) $(realpath $(LIBS))
 	otool -L $(PYLIB)
 	cd ../; ln -sf $(FUVER)/$(PYLIB)

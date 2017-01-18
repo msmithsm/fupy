@@ -231,7 +231,7 @@ fi%ioptmethod = 1 ! ( ioptmethod = 1 Dont USe Minnis tau_wp and assume Ice Parti
 
 fi%swonlycomp   =.false.
 !200609 
-fi%curvedearth  = .true.
+fi%curvedearth  = .false.
 !Trace Gas Concentrations
 
 fi%umco2	     = 360. ! 360 ppmv CO2 Concetration (Affects LW only , SW Fixed)
@@ -268,8 +268,8 @@ fi%itps(1)	     = 2	   ! Continental see types (1-18)
 fi%itps(2)	     = 1	   
 fi%n_atau	      = 1	   ! 1 wavelength input for aerosols
 fi%a_wli(1)	      = 0.641	   ! AOT wavelength(microns) of a_taus
-fi%a_taus(1,1)	      =  0.0	   ! AOT for constituent 1
-fi%aprofs(:,1) = 1.0
+fi%a_taus(:,:)	      =  0.0	   ! AOT for constituent 1
+fi%aprofs(:,:) = 1.0
 
 
 end subroutine set_default_options_fu

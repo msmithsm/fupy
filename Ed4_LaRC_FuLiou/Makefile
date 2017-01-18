@@ -17,6 +17,7 @@ clean :
 	cd ./lib/src ;make clean
 	cd ./src/simple ; make clean
 	cd ./src ; make clean
+	rm -f *.so *.a *.o 
 
 #------------------------------------
 tar:

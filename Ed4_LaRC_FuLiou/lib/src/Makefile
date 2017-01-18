@@ -25,8 +25,8 @@ INC_FLAG =
 #CFLAGS = 
 
 #!!!SGI
-F90 = gfortran -fdefault-real-8 -fdefault-double-8 -fno-align-commons -fbacktrace 
-F77 = gfortran -fdefault-real-8 -fdefault-double-8 -fno-align-commons -fbacktrace
+F90 = gfortran -O3 -fdefault-real-8 -fdefault-double-8 -fno-align-commons  
+F77 = gfortran -O3 -fdefault-real-8 -fdefault-double-8 -fno-align-commons 
 F90LOAD = 
 F90COMP = -c  
 FCOMP   = -c   
